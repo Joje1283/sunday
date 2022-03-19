@@ -43,5 +43,5 @@ class Use(models.Model):
     )
     start_date = models.DateTimeField(verbose_name='휴가 시작일')
     end_date = models.DateTimeField(verbose_name='휴가 종료일')
-    approve = models.BooleanField(verbose_name='휴가 승인 여부')
-    cancel = models.BooleanField(verbose_name='휴가 취소 여부')
+    approve = models.BooleanField(verbose_name='휴가 승인 여부', default=False)
+    cancel = models.BooleanField(verbose_name='휴가 취소 여부', default=False)

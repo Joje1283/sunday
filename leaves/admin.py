@@ -9,4 +9,4 @@ class GrantAdmin(admin.ModelAdmin):
 
 @admin.register(Use)
 class UseAdmin(admin.ModelAdmin):
-    list_display = ['user', 'type', 'days', 'start_date', 'end_date', 'approve', 'cancel']
+    list_display = ['user', 'type', 'days', 'approve', 'cancel']
