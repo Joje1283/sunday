@@ -1,4 +1,7 @@
+from django.utils import timezone
 import datetime
+import pytz
+from django.conf import settings
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -14,14 +17,14 @@ class GrantSerializer(serializers.ModelSerializer):
 
 class UseSerializer(serializers.Serializer):
     START_TIMES = (
-        (datetime.time(hour=9), '09:00'),
-        (datetime.time(hour=11), '11:00'),
-        (datetime.time(hour=14), '14:00'),
+        (datetime.time(hour=9, tzinfo=pytz.timezone(settings.TIME_ZONE)), '09:00'),
+        (datetime.time(hour=11, tzinfo=pytz.timezone(settings.TIME_ZONE)), '11:00'),
+        (datetime.time(hour=14, tzinfo=pytz.timezone(settings.TIME_ZONE)), '14:00'),
     )
     END_TIMES = (
-        (datetime.time(hour=13), '13:00'),
-        (datetime.time(hour=16), '16:00'),
-        (datetime.time(hour=18), '18:00'),
+        (datetime.time(hour=13, tzinfo=pytz.timezone(settings.TIME_ZONE)), '13:00'),
+        (datetime.time(hour=16, tzinfo=pytz.timezone(settings.TIME_ZONE)), '16:00'),
+        (datetime.time(hour=18, tzinfo=pytz.timezone(settings.TIME_ZONE)), '18:00'),
     )
     type = serializers.ChoiceField(choices=Type.choices, default=Type.ANNURE)
     start_date = serializers.DateField()
@@ -34,14 +37,16 @@ class UseSerializer(serializers.Serializer):
         start_date_time, end_date_time = data['start_date_time'], data['end_date_time']
         if start_date > end_date:
             raise ValidationError('휴가 종료일이 휴가 시작일보다 빠릅니다.')
-        data['_start_date'] = datetime.datetime(year=start_date.year,
+        data['_start_date'] = timezone.datetime(year=start_date.year,
                                                 month=start_date.month,
                                                 day=start_date.day,
-                                                hour=start_date_time.hour)
-        data['_end_date'] = datetime.datetime(year=end_date.year,
+                                                hour=start_date_time.hour,
+                                                tzinfo=pytz.timezone(settings.TIME_ZONE))
+        data['_end_date'] = timezone.datetime(year=end_date.year,
                                               month=end_date.month,
                                               day=end_date.day,
-                                              hour=end_date_time.hour)
+                                              hour=end_date_time.hour,
+                                              tzinfo=pytz.timezone(settings.TIME_ZONE))
         data['days'] = self._calculate_days(start_date, start_date_time.hour, end_date, end_date_time.hour)
         return data
 
