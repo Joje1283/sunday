@@ -21,7 +21,7 @@ class Grant(models.Model):
         choices=Type.choices,
         default=Type.ANNURE,
     )
-    days = models.IntegerField(
+    days = models.FloatField(
         verbose_name='부여된 휴가 일수'
     )
 
@@ -38,7 +38,7 @@ class Use(models.Model):
         choices=Type.choices,
         default=Type.ANNURE
     )
-    days = models.IntegerField(
+    days = models.FloatField(
         verbose_name='사용한 휴가 일수'
     )
     start_date = models.DateTimeField(verbose_name='휴가 시작일')
