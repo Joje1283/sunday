@@ -1,7 +1,7 @@
-from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.contrib.auth import get_user_model
 
-from .models import Use, Grant, Type
+from .models import Grant, Type
 
 User = get_user_model()
 
