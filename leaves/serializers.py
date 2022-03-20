@@ -3,13 +3,13 @@ import datetime
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from .models import Grant, Use, Type
+from .models import Grant, Type
 
 
 class GrantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grant
-        fields = ['user', 'type', 'days']
+        fields = ['type', 'days']
 
 
 class UseSerializer(serializers.Serializer):
