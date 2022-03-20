@@ -3,10 +3,10 @@ from django.conf import settings
 
 
 class Type(models.TextChoices):
-    ANNURE = 'A'
-    UNPAID = 'U'
-    FAMILY_EVENT = 'F'
-    SPECIAL = 'S'
+    ANNURE = ('A', '연차')
+    UNPAID = ('U', '무급휴가')
+    FAMILY_EVENT = ('F', '경조휴가')
+    SPECIAL = ('S', '특별휴가')
 
 
 class Grant(models.Model):
