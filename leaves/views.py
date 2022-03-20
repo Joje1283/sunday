@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
@@ -25,7 +25,7 @@ class UseCreateView(APIView):
 
 class GrantCreateView(CreateAPIView):
     serializer_class = GrantSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
         authenticated_user = get_user_model().objects.first()  # Todo: Login User로 변경
