@@ -14,7 +14,7 @@ class LeaveTestCase(TestCase):
         self.일반사용자3 = User.objects.create(username="일반사용자3")
         self.일반사용자4 = User.objects.create(username="일반사용자4")
         self.일반사용자5 = User.objects.create(username="일반사용자5")
-        self.관리자 = User.objects.create(username="재무팀사용자")
+        self.관리자 = User.objects.create(username="관리자")
         self.관리자.is_staff = True
         self.관리자.save()
 
@@ -59,8 +59,8 @@ class LeaveTestCase(TestCase):
         self.assertEqual(Grant.objects.count(), 6)
 
     def test_일반사용자가_휴가를_사용한다(self):
+        # 휴가를 부여하지 않고 사용한다
         self.client.force_login(self.일반사용자1)
-
         res = self.client.post(
             path="/leaves/use/",
             data={
@@ -72,6 +72,9 @@ class LeaveTestCase(TestCase):
         )
         self.assertEqual(res.status_code, 400)
 
+        # 휴가를 부여 후 사용한다
+        self.test_관리자가_일반사용자에게_휴가를_부여한다()
+        self.client.force_login(self.일반사용자1)
         res = self.client.post(
             path="/leaves/use/",
             data={

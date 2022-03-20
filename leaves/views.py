@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView
 
 from .serializers import UseSerializer, GrantSerializer
 from .models import Use
@@ -12,12 +12,23 @@ from .models import Use
 
 class UseCreateView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = UseSerializer
+
+    def get_serializer_context(self):
+        """
+        Extra context provided to the serializer class.
+        """
+        return {
+            'request': self.request,
+            'format': self.format_kwarg,
+            'view': self
+        }
 
     def post(self, request, format=None):
-        serializer = UseSerializer(data=request.data)
+        serializer = UseSerializer(data=request.data, context=self.get_serializer_context())
         if serializer.is_valid():
             result = serializer.result
-            result['user'] = get_user_model().objects.first()  # Todo: Login User로 변경
+            result['user'] = request.user
             Use.objects.create(**result)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -28,6 +39,6 @@ class GrantCreateView(CreateAPIView):
     permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
-        authenticated_user = get_user_model().objects.first()  # Todo: Login User로 변경
-        serializer.save(user=authenticated_user)
+        target_user_id = self.request.parser_context['kwargs']['pk']
+        serializer.save(user_id=target_user_id)
         return super().perform_create(serializer)

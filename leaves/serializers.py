@@ -1,12 +1,14 @@
-from django.utils import timezone
 import datetime
 import pytz
+
+from django.utils import timezone
+from django.db.models import Sum
 from django.conf import settings
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from .models import Grant, Type
+from .models import Grant, Type, Use
 
 
 class GrantSerializer(serializers.ModelSerializer):
@@ -48,7 +50,26 @@ class UseSerializer(serializers.Serializer):
                                               hour=end_date_time.hour,
                                               tzinfo=pytz.timezone(settings.TIME_ZONE))
         data['days'] = self._calculate_days(start_date, start_date_time.hour, end_date, end_date_time.hour)
+        user_id = self.context['request'].user.pk
+        residual_leave_count = self.residual_leave_count(user_id, data['type'])
+        if data['days'] > residual_leave_count:
+            raise ValidationError(f'잔여 휴가(type: {data["type"]})가 부족합니다.')
         return data
+
+    @staticmethod
+    def residual_leave_count(user_id, type):
+        granted_leave_count = Grant.objects.filter(
+            user_id=user_id,
+            type=type,
+        ).count()
+        used_leave_qs = Use.objects.filter(
+            user_id=user_id,
+            type=type,
+            approve=True,
+            cancel=False
+        )
+        used_leave_count = used_leave_qs.aggregate(Sum('days')).get('days__sum', 0) if used_leave_qs else 0
+        return granted_leave_count - used_leave_count
 
     @staticmethod
     def _calculate_days(start_date, start_date_time_hour, end_date, end_date_time_hour):
