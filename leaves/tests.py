@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from .models import Grant, Type
+from .models import Grant, Type, Use
 
 User = get_user_model()
 
@@ -64,7 +64,7 @@ class LeaveTestCase(TestCase):
         self.assertEqual(res.status_code, 201)
         self.assertEqual(Grant.objects.count(), 7)
 
-    def test_일반사용자가_휴가를_사용한다(self):
+    def test_일반사용자가_휴가를_신청한다(self):
         # 휴가를 부여하지 않고 사용한다
         self.client.force_login(self.일반사용자1)
         res = self.client.post(
@@ -115,7 +115,31 @@ class LeaveTestCase(TestCase):
         )
 
     def test_일반사용자가_신청한_휴가를_취소한다(self):
-        pass
+        self.test_관리자가_일반사용자에게_휴가를_부여한다()
+
+        # 일반 사용자1이 휴가를 신청한다.
+        self.client.force_login(self.일반사용자1)
+        res = self.client.post(
+            path="/leaves/use/",
+            data={
+                "type": Type.ANNURE,
+                "start_date": "2022-01-02",
+                "end_date": "2022-01-03",
+                "start_date_time": "11:00:00"
+            }
+        )
+        # 일반 사용자1이 휴가를 취소한다.
+        use = Use.objects.filter(user=self.일반사용자1).first()
+        self.assertEqual(use.cancel, False)
+        res = self.client.put(
+            path=f"/leaves/use/{use.pk}/",
+            data={
+                "cancel": True
+            },
+            content_type='application/json'
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(Use.objects.get(pk=use.pk).cancel, True)
 
     def test_일반사용자가_예약된_휴가를_조회한다(self):
         self.test_관리자가_일반사용자에게_휴가를_부여한다()

@@ -3,15 +3,16 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView
 
 from .models import Use, Type
-from .serializers import UseSerializer, GrantSerializer, get_residual_leave_count, LeaveCountSerializer
+from .serializers import UseCreateSerializer, GrantSerializer, get_residual_leave_count, LeaveCountSerializer, \
+    UseSerializer
 
 
 class UseCreateView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = UseSerializer
+    serializer_class = UseCreateSerializer
 
     def get_serializer_context(self):
         """
@@ -24,13 +25,19 @@ class UseCreateView(APIView):
         }
 
     def post(self, request, format=None):
-        serializer = UseSerializer(data=request.data, context=self.get_serializer_context())
+        serializer = UseCreateSerializer(data=request.data, context=self.get_serializer_context())
         if serializer.is_valid():
             result = serializer.result
             result['user'] = request.user
             Use.objects.create(**result)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UseCancelView(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UseSerializer
+    queryset = Use.objects.all()
 
 
 class GrantCreateView(CreateAPIView):

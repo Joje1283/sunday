@@ -36,7 +36,13 @@ class GrantSerializer(serializers.ModelSerializer):
         fields = ['type', 'days']
 
 
-class UseSerializer(serializers.Serializer):
+class UseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Use
+        fields = ['cancel']
+
+
+class UseCreateSerializer(serializers.Serializer):
     START_TIMES = (
         (datetime.time(hour=9, tzinfo=pytz.timezone(settings.TIME_ZONE)), '09:00'),
         (datetime.time(hour=11, tzinfo=pytz.timezone(settings.TIME_ZONE)), '11:00'),
