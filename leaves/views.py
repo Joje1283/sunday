@@ -73,6 +73,8 @@ def leave_history_view(request):
     user = request.user
     type = request.query_params.get('type')
     use_qs = Use.objects.filter(user=user)
+    if type == 'reserved':
+        use_qs = use_qs.filter(approve=True)
     serializer = LeaveHistorySerializer(use_qs, many=True)
     return Response(serializer.data, status.HTTP_200_OK)
 

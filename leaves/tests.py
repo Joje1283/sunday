@@ -165,15 +165,42 @@ class LeaveTestCase(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(Use.objects.get(pk=use.pk).cancel, True)
 
-    def test_일반사용자가_예약된_휴가를_조회한다(self):
+    def test_일반사용자가_승인된_휴가를_조회한다(self):
+        # 휴가를 부여 후 사용한다
         self.test_관리자가_일반사용자에게_휴가를_부여한다()
         self.client.force_login(self.일반사용자1)
+        res = self.client.post(
+            path="/leaves/use/",
+            data={
+                "type": Type.ANNURE,
+                "start_date": "2022-01-02",
+                "end_date": "2022-01-03",
+                "start_date_time": "11:00:00"
+            }
+        )
+        res = self.client.post(
+            path="/leaves/use/",
+            data={
+                "type": Type.ANNURE,
+                "start_date": "2022-01-05",
+                "end_date": "2022-01-06",
+            }
+        )
         res = self.client.get(
             path="/leaves/",
             data={
-                "type": "reservation"
+                "type": "reserved"
             }
         )
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(res.json()), 0)  # 승인된 휴가가 없기에, 0개
+        res = self.client.get(
+            path="/leaves/count/",
+            data={
+                "type": Type.ANNURE
+            }
+        )
+        self.assertEqual(res.json().get('count'), 2.0)
 
     def test_관리자가_요청된_휴가를_조회한다(self):
         pass
