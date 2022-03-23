@@ -13,5 +13,5 @@ urlpatterns = [
     path('grant/', views.GrantCreateView.as_view()),  # /accounts/<user_id>/grant
     path('use/', views.UseCreateView.as_view()),  # /use
     path('count/', views.use_count_view),
-    path('use/<int:pk>/', views.UseCancelView.as_view())
+    path('use/<int:pk>/', views.UseUpdateView.as_view())
 ]

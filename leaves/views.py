@@ -40,7 +40,7 @@ class UseCreateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UseCancelView(UpdateAPIView):
+class UseUpdateView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UseSerializer
     queryset = Use.objects.all()

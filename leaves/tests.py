@@ -205,7 +205,7 @@ class LeaveTestCase(TestCase):
     def test_관리자가_요청된_휴가를_조회한다(self):
         pass
 
-    def test_관리자가_요청한_휴가를_수락한다(self):
+    def test_관리자가_요청된_휴가를_수락한다(self):
         pass
 
     def test_관리자가_모든_예약된_휴가를_조회한다(self):
