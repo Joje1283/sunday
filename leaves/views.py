@@ -6,8 +6,13 @@ from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, UpdateAPIView
 
 from .models import Use, Type
-from .serializers import UseCreateSerializer, GrantSerializer, get_residual_leave_count, LeaveCountSerializer, \
+from .serializers import (
+    UseCreateSerializer,
+    GrantSerializer,
+    get_residual_leave_count,
+    LeaveCountSerializer,
     UseSerializer
+)
 
 
 class UseCreateView(APIView):
