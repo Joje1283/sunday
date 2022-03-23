@@ -11,4 +11,5 @@ from . import views
 urlpatterns = [
     path('grant/', views.GrantCreateView.as_view()),  # /accounts/<user_id>/grant
     path('use/', views.UseCreateView.as_view()),  # /use
+    path('count/', views.use_count_view)
 ]

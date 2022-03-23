@@ -28,6 +28,12 @@ class LeaveTestCase(TestCase):
         self.assertEqual(res.status_code, 201)
         res = self.client.post(
             path=f"/accounts/{self.일반사용자1.pk}/leaves/grant/",
+            data={"type": Type.ANNURE, "days": 15},
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.client.post(
+            path=f"/accounts/{self.일반사용자1.pk}/leaves/grant/",
             data={"type": Type.SPECIAL, "days": 15},
             content_type="application/json",
         )
@@ -56,7 +62,7 @@ class LeaveTestCase(TestCase):
             content_type="application/json",
         )
         self.assertEqual(res.status_code, 201)
-        self.assertEqual(Grant.objects.count(), 6)
+        self.assertEqual(Grant.objects.count(), 7)
 
     def test_일반사용자가_휴가를_사용한다(self):
         # 휴가를 부여하지 않고 사용한다
@@ -91,7 +97,12 @@ class LeaveTestCase(TestCase):
         self.client.force_login(self.일반사용자1)
         res = self.client.get(
             path="/leaves/count/",
+            data={
+                "type": Type.ANNURE
+            }
         )
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json().get('count'), 2.0)
 
     def test_일반사용자가_올해_휴가_내역을_조회한다(self):
         self.test_관리자가_일반사용자에게_휴가를_부여한다()

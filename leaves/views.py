@@ -1,11 +1,12 @@
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
 
-from .models import Use
-from .serializers import UseSerializer, GrantSerializer
+from .models import Use, Type
+from .serializers import UseSerializer, GrantSerializer, get_residual_leave_count, LeaveCountSerializer
 
 
 class UseCreateView(APIView):
@@ -40,3 +41,14 @@ class GrantCreateView(CreateAPIView):
         target_user_id = self.request.parser_context['kwargs']['pk']
         serializer.save(user_id=target_user_id)
         return super().perform_create(serializer)
+
+
+@api_view(['GET'])
+def use_count_view(request):
+    if request.query_params and request.query_params.get('type'):
+        type = request.query_params.get('type')
+        leave_count = get_residual_leave_count(request.user.pk, type)
+    else:
+        leave_count = get_residual_leave_count(request.user.pk, Type.ANNURE)
+    serializer = LeaveCountSerializer({'count': leave_count})
+    return Response(serializer.data, status.HTTP_200_OK)
