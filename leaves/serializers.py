@@ -30,6 +30,12 @@ class LeaveCountSerializer(serializers.Serializer):
     count = serializers.FloatField()
 
 
+class LeaveHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Use
+        fields = ['type', 'start_date', 'end_date']
+
+
 class GrantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grant

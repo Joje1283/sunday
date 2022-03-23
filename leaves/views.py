@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,7 +11,8 @@ from .serializers import (
     GrantSerializer,
     get_residual_leave_count,
     LeaveCountSerializer,
-    UseSerializer
+    UseSerializer,
+    LeaveHistorySerializer,
 )
 
 
@@ -64,3 +65,14 @@ def use_count_view(request):
         leave_count = get_residual_leave_count(request.user.pk, Type.ANNURE)
     serializer = LeaveCountSerializer({'count': leave_count})
     return Response(serializer.data, status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def leave_history_view(request):
+    user = request.user
+    type = request.query_params.get('type')
+    use_qs = Use.objects.filter(user=user)
+    serializer = LeaveHistorySerializer(use_qs, many=True)
+    return Response(serializer.data, status.HTTP_200_OK)
+
