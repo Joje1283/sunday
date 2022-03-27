@@ -210,9 +210,10 @@ class LeaveTestCase(TestCase):
             content_type="application/json",
         )
         self.assertEqual(res.status_code, 200)
-        data = res.json()
-        self.assertEqual(1, len(data))
-        self.assertFalse(data[0]['approve'])
+        datas = res.json()
+        self.assertEqual(1, len(datas))
+        for data in datas:
+            self.assertFalse(data['approve'])
 
     def test_관리자가_요청된_휴가를_수락한다(self):
         pass
