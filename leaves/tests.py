@@ -216,7 +216,26 @@ class LeaveTestCase(TestCase):
             self.assertFalse(data['approve'])
 
     def test_관리자가_요청된_휴가를_수락한다(self):
-        pass
+        self.test_일반사용자가_휴가를_신청한다()
 
-    def test_관리자가_모든_예약된_휴가를_조회한다(self):
-        pass
+        # 수락되지 않은 휴가 목록을 가져온다
+        self.client.force_login(self.관리자)
+        res = self.client.get(
+            path="/management/leaves/",
+            content_type="application/json",
+        )
+        datas = res.json()
+        target_leave = datas[0]
+
+        # 휴가를 수락한다
+        target_leave_id = target_leave['id']
+        res = self.client.put(
+            path=f"/management/leaves/{target_leave_id}/",
+            content_type="application/json",
+            data={'approve': True}
+        )
+        self.assertEqual(res.status_code, 200)
+        datas = res.json()
+        target_leave = Use.objects.get(pk=target_leave_id)
+        self.assertTrue(target_leave.approve)
+        self.assertTrue(datas['approve'])
