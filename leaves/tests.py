@@ -203,50 +203,16 @@ class LeaveTestCase(TestCase):
         self.assertEqual(res.json().get('count'), 2.0)
 
     def test_관리자가_요청된_휴가를_조회한다(self):
-        pass
+        self.test_일반사용자가_휴가를_신청한다()
+        self.client.force_login(self.관리자)
+        res = self.client.get(
+            path="/management/leaves/",
+            content_type="application/json",
+        )
+        self.assertEqual(res.status_code, 200)
 
     def test_관리자가_요청된_휴가를_수락한다(self):
         pass
 
     def test_관리자가_모든_예약된_휴가를_조회한다(self):
-        self.test_관리자가_일반사용자에게_휴가를_부여한다()
-
-        # 일반 사용자들이 휴가 사용
-        self.client.force_login(self.일반사용자1)
-        res = self.client.post(
-            path="/leaves/use/",
-            data={
-                "type": Type.ANNURE,
-                "start_date": "2022-01-02",
-                "end_date": "2022-01-03",
-                "start_date_time": "11:00:00"
-            }
-        )
-        self.client.force_login(self.일반사용자1)
-        res = self.client.post(
-            path="/leaves/use/",
-            data={
-                "type": Type.SPECIAL,
-                "start_date": "2022-01-04",
-                "end_date": "2022-01-10",
-                "start_date_time": "11:00:00"
-            }
-        )
-        self.client.force_login(self.일반사용자2)
-        res = self.client.post(
-            path="/leaves/use/",
-            data={
-                "type": Type.ANNURE,
-                "start_date": "2022-01-02",
-                "end_date": "2022-01-03",
-                "start_date_time": "11:00:00"
-            }
-        )
-
-        self.client.force_login(self.관리자)
-        res = self.client.get(
-            path="/leaves/",
-            data={
-                "type": "admin"
-            }
-        )
+        pass
